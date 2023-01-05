@@ -2,11 +2,9 @@ package com.moko.mkscannergw.activity;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.view.View;
 
 import com.moko.ble.lib.utils.MokoUtils;
-import com.moko.mkscannergw.BaseApplication;
 import com.moko.mkscannergw.R;
 import com.moko.mkscannergw.base.BaseActivity;
 import com.moko.mkscannergw.databinding.ActivityAboutBinding;
@@ -20,17 +18,17 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.Calendar;
 
-public class AboutActivity extends BaseActivity {
+public class AboutActivity extends BaseActivity<ActivityAboutBinding> {
 
-
-    private ActivityAboutBinding mBind;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityAboutBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         mBind.tvSoftVersion.setText(getString(R.string.version_info, Utils.getVersionInfo(this)));
+    }
+
+    @Override
+    protected ActivityAboutBinding getViewBinding() {
+        return ActivityAboutBinding.inflate(getLayoutInflater());
     }
 
     public void openURL(View view) {
@@ -50,9 +48,9 @@ public class AboutActivity extends BaseActivity {
     public void onFeedbackLog(View view) {
         if (isWindowLocked())
             return;
-        File trackerLog = new File(BaseApplication.PATH_LOGCAT + File.separator + "MKScannerGW.txt");
-        File trackerLogBak = new File(BaseApplication.PATH_LOGCAT + File.separator + "MKScannerGW.txt.bak");
-        File trackerCrashLog = new File(BaseApplication.PATH_LOGCAT + File.separator + "crash_log.txt");
+        File trackerLog = new File(ScannerMainActivity.PATH_LOGCAT + File.separator + "MKScannerGW.txt");
+        File trackerLogBak = new File(ScannerMainActivity.PATH_LOGCAT + File.separator + "MKScannerGW.txt.bak");
+        File trackerCrashLog = new File(ScannerMainActivity.PATH_LOGCAT + File.separator + "crash_log.txt");
         if (!trackerLog.exists() || !trackerLog.canRead()) {
             ToastUtils.showToast(this, "File is not exists!");
             return;

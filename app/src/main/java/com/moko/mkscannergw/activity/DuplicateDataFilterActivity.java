@@ -1,6 +1,5 @@
 package com.moko.mkscannergw.activity;
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -36,8 +35,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class DuplicateDataFilterActivity extends BaseActivity {
-    private ActivityDuplicateDataFilterBinding mBind;
+public class DuplicateDataFilterActivity extends BaseActivity<ActivityDuplicateDataFilterBinding> {
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -49,10 +47,7 @@ public class DuplicateDataFilterActivity extends BaseActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityDuplicateDataFilterBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -69,6 +64,11 @@ public class DuplicateDataFilterActivity extends BaseActivity {
             finish();
         }, 30 * 1000);
         getDuplicateDataFilter();
+    }
+
+    @Override
+    protected ActivityDuplicateDataFilterBinding getViewBinding() {
+        return ActivityDuplicateDataFilterBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

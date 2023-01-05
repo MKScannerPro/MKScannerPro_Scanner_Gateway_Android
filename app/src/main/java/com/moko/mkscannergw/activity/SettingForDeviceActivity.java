@@ -1,6 +1,5 @@
 package com.moko.mkscannergw.activity;
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -33,10 +32,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.lang.reflect.Type;
 
 
-public class SettingForDeviceActivity extends BaseActivity {
+public class SettingForDeviceActivity extends BaseActivity<ActivitySettingForDeviceBinding> {
 
     public static String TAG = SettingForDeviceActivity.class.getSimpleName();
-    private ActivitySettingForDeviceBinding mBind;
 
 
     private MokoDevice mMokoDevice;
@@ -46,10 +44,7 @@ public class SettingForDeviceActivity extends BaseActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivitySettingForDeviceBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -61,6 +56,11 @@ public class SettingForDeviceActivity extends BaseActivity {
             finish();
         }, 30 * 1000);
         getSettingForDevice();
+    }
+
+    @Override
+    protected ActivitySettingForDeviceBinding getViewBinding() {
+        return ActivitySettingForDeviceBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

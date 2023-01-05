@@ -11,26 +11,21 @@ import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.Environment;
 
-import com.moko.mkscannergw.BaseApplication;
+import com.moko.mkscannergw.BuildConfig;
+import com.moko.mkscannergw.activity.ScannerMainActivity;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import androidx.core.content.FileProvider;
+
 public class Utils {
 
 
-    public static File getFile(Context context, String fileName) {
-        String devicePath;
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            // 优先保存到SD卡中
-            devicePath = BaseApplication.PATH_LOGCAT + File.separator + fileName;
-        } else {
-            // 如果SD卡不存在，就保存到本应用的目录下
-            devicePath = context.getFilesDir().getAbsolutePath() + File.separator + "MKScannerGW" + File.separator + fileName;
-        }
+    public static File getFile(String fileName) {
+        String devicePath = ScannerMainActivity.PATH_LOGCAT + File.separator + fileName;
         File deviceListFile = new File(devicePath);
         if (!deviceListFile.exists()) {
             try {
@@ -59,12 +54,20 @@ public class Utils {
         Intent intent;
         if (files.length == 1) {
             intent = new Intent(Intent.ACTION_SEND);
+            Uri uri;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                Uri fileUri = IOUtils.insertDownloadFile(context, files[0]);
-                intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                uri = IOUtils.insertDownloadFile(context, files[0]);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (BuildConfig.IS_LIBRARY) {
+                    uri = FileProvider.getUriForFile(context, "com.moko.mkscannerpro.fileprovider", files[0]);
+                } else {
+                    uri = FileProvider.getUriForFile(context, "com.moko.mkscannergw.fileprovider", files[0]);
+                }
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } else {
-                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(files[0]));
+                uri = Uri.fromFile(files[0]);
             }
+            intent.putExtra(Intent.EXTRA_STREAM, uri);
             intent.putExtra(Intent.EXTRA_TEXT, body);
         } else {
             ArrayList<Uri> uris = new ArrayList<>();
@@ -86,7 +89,6 @@ public class Utils {
         intent.putExtra(Intent.EXTRA_EMAIL, addresses);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.setType("message/rfc822");
-        Intent.createChooser(intent, tips);
         if (intent.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(intent);
         }

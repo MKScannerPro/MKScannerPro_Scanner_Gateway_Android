@@ -2,7 +2,6 @@ package com.moko.mkscannergw.activity;
 
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -39,8 +38,7 @@ import java.lang.reflect.Type;
 
 import androidx.annotation.Nullable;
 
-public class FilterRawDataSwitchActivity extends BaseActivity {
-    private ActivityFilterRawDataSwitchBinding mBind;
+public class FilterRawDataSwitchActivity extends BaseActivity<ActivityFilterRawDataSwitchBinding> {
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -51,11 +49,7 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
     private boolean isBXPTHOpen;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityFilterRawDataSwitchBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
-
+    protected void onCreate() {
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -67,6 +61,11 @@ public class FilterRawDataSwitchActivity extends BaseActivity {
             finish();
         }, 30 * 1000);
         getFilterRawDataSwitch();
+    }
+
+    @Override
+    protected ActivityFilterRawDataSwitchBinding getViewBinding() {
+        return ActivityFilterRawDataSwitchBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -2,7 +2,6 @@ package com.moko.mkscannergw.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
@@ -62,9 +61,8 @@ import androidx.annotation.IdRes;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
+public class SetDeviceMQTTActivity extends BaseActivity<ActivityMqttDeviceBinding> implements RadioGroup.OnCheckedChangeListener {
     private final String FILTER_ASCII = "[ -~]*";
-    private ActivityMqttDeviceBinding mBind;
 
     private GeneralDeviceFragment generalFragment;
     private UserDeviceFragment userFragment;
@@ -93,10 +91,7 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
     private InputFilter filter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityMqttDeviceBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         String MQTTConfigStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         mqttAppConfig = new Gson().fromJson(MQTTConfigStr, MQTTConfig.class);
         mSelectedDeviceName = getIntent().getStringExtra(AppConstants.EXTRA_KEY_SELECTED_DEVICE_NAME);
@@ -243,6 +238,11 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
             showLoadingProgressDialog();
             MokoSupport.getInstance().sendOrder(OrderTaskAssembler.getChannelDomain());
         }
+    }
+
+    @Override
+    protected ActivityMqttDeviceBinding getViewBinding() {
+        return ActivityMqttDeviceBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 100)
@@ -537,16 +537,12 @@ public class SetDeviceMQTTActivity extends BaseActivity implements RadioGroup.On
 
     @Override
     public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-        switch (checkedId) {
-            case R.id.rb_general:
-                mBind.vpMqtt.setCurrentItem(0);
-                break;
-            case R.id.rb_user:
-                mBind.vpMqtt.setCurrentItem(1);
-                break;
-            case R.id.rb_ssl:
-                mBind.vpMqtt.setCurrentItem(2);
-                break;
+        if (checkedId == R.id.rb_general) {
+            mBind.vpMqtt.setCurrentItem(0);
+        } else if (checkedId == R.id.rb_user) {
+            mBind.vpMqtt.setCurrentItem(1);
+        } else if (checkedId == R.id.rb_ssl) {
+            mBind.vpMqtt.setCurrentItem(2);
         }
     }
 

@@ -16,8 +16,6 @@ import com.elvishew.xlog.printer.file.FilePrinter;
 import com.elvishew.xlog.printer.file.naming.ChangelessFileNameGenerator;
 import com.moko.ble.lib.log.ClearLogBackStrategy;
 import com.moko.mkscannergw.utils.IOUtils;
-import com.moko.support.scannergw.MQTTSupport;
-import com.moko.support.scannergw.MokoSupport;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -29,14 +27,12 @@ public class BaseApplication extends Application {
     private static final String TAG = "MKScannerGW";
     private static final String LOG_FILE = "MKScannerGW.txt";
     private static final String LOG_FOLDER = "MKScannerGW";
-    public static String PATH_LOGCAT;
+    private static String PATH_LOGCAT;
 
     @Override
     public void onCreate() {
         super.onCreate();
         initXLog();
-        MokoSupport.getInstance().init(getApplicationContext());
-        MQTTSupport.getInstance().init(getApplicationContext());
         Thread.setDefaultUncaughtExceptionHandler(new BTUncaughtExceptionHandler());
     }
 

@@ -16,9 +16,10 @@ import org.greenrobot.eventbus.EventBus;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.viewbinding.ViewBinding;
 
-public class BaseActivity extends FragmentActivity {
-
+public abstract class BaseActivity<VM extends ViewBinding> extends FragmentActivity {
+    protected VM mBind;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,8 +29,15 @@ public class BaseActivity extends FragmentActivity {
             startActivity(intent);
             return;
         }
+        mBind = getViewBinding();
+        setContentView(mBind.getRoot());
+        onCreate();
         EventBus.getDefault().register(this);
     }
+
+    protected void onCreate(){}
+
+    protected abstract VM getViewBinding();
 
     @Override
     protected void onDestroy() {

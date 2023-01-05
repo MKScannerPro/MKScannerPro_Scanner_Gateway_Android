@@ -1,7 +1,6 @@
 package com.moko.mkscannergw.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -43,8 +42,7 @@ import java.util.List;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-public class DeviceDetailActivity extends BaseActivity {
-    private ActivityDetailBinding mBind;
+public class DeviceDetailActivity extends BaseActivity<ActivityDetailBinding> {
 
     private boolean mScanSwitch;
     private int mScanInterval;
@@ -55,10 +53,7 @@ public class DeviceDetailActivity extends BaseActivity {
     private Handler mHandler;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityDetailBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -76,6 +71,11 @@ public class DeviceDetailActivity extends BaseActivity {
         }, 30 * 1000);
         showLoadingProgressDialog();
         getScanConfig();
+    }
+
+    @Override
+    protected ActivityDetailBinding getViewBinding() {
+        return ActivityDetailBinding.inflate(getLayoutInflater());
     }
 
     private void changeView() {

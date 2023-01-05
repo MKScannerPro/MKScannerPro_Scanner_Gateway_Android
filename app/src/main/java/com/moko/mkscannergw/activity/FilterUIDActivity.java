@@ -1,7 +1,6 @@
 package com.moko.mkscannergw.activity;
 
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -34,8 +33,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-public class FilterUIDActivity extends BaseActivity {
-    private ActivityFilterUidBinding mBind;
+public class FilterUIDActivity extends BaseActivity<ActivityFilterUidBinding> {
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -43,10 +41,7 @@ public class FilterUIDActivity extends BaseActivity {
     public Handler mHandler;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityFilterUidBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -58,6 +53,11 @@ public class FilterUIDActivity extends BaseActivity {
             finish();
         }, 30 * 1000);
         getFilterUid();
+    }
+
+    @Override
+    protected ActivityFilterUidBinding getViewBinding() {
+        return ActivityFilterUidBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

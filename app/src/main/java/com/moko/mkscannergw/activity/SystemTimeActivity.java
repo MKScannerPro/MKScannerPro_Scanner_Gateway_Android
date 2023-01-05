@@ -1,6 +1,5 @@
 package com.moko.mkscannergw.activity;
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -38,7 +37,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class SystemTimeActivity extends BaseActivity {
+public class SystemTimeActivity extends BaseActivity<ActivitySystemTimeBinding> {
     private ActivitySystemTimeBinding mBind;
 
     private MokoDevice mMokoDevice;
@@ -51,10 +50,7 @@ public class SystemTimeActivity extends BaseActivity {
     private int mSelectedTimeZone;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivitySystemTimeBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -76,6 +72,11 @@ public class SystemTimeActivity extends BaseActivity {
             finish();
         }, 30 * 1000);
         getSystemTime();
+    }
+
+    @Override
+    protected ActivitySystemTimeBinding getViewBinding() {
+        return ActivitySystemTimeBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

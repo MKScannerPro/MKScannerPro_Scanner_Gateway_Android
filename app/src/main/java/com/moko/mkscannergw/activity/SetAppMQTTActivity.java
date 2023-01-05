@@ -1,7 +1,6 @@
 package com.moko.mkscannergw.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
@@ -39,9 +38,8 @@ import androidx.annotation.IdRes;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-public class SetAppMQTTActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
+public class SetAppMQTTActivity extends BaseActivity<ActivityMqttAppBinding> implements RadioGroup.OnCheckedChangeListener {
     private final String FILTER_ASCII = "[ -~]*";
-    private ActivityMqttAppBinding mBind;
 
     private GeneralFragment generalFragment;
     private UserFragment userFragment;
@@ -52,10 +50,7 @@ public class SetAppMQTTActivity extends BaseActivity implements RadioGroup.OnChe
     private MQTTConfig mqttConfig;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityMqttAppBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         String MQTTConfigStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         if (TextUtils.isEmpty(MQTTConfigStr)) {
             mqttConfig = new MQTTConfig();
@@ -92,6 +87,11 @@ public class SetAppMQTTActivity extends BaseActivity implements RadioGroup.OnChe
         });
         mBind.vpMqtt.setOffscreenPageLimit(3);
         mBind.rgMqtt.setOnCheckedChangeListener(this);
+    }
+
+    @Override
+    protected ActivityMqttAppBinding getViewBinding() {
+        return ActivityMqttAppBinding.inflate(getLayoutInflater());
     }
 
 
@@ -167,16 +167,12 @@ public class SetAppMQTTActivity extends BaseActivity implements RadioGroup.OnChe
 
     @Override
     public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-        switch (checkedId) {
-            case R.id.rb_general:
-                mBind.vpMqtt.setCurrentItem(0);
-                break;
-            case R.id.rb_user:
-                mBind.vpMqtt.setCurrentItem(1);
-                break;
-            case R.id.rb_ssl:
-                mBind.vpMqtt.setCurrentItem(2);
-                break;
+        if (checkedId == R.id.rb_general) {
+            mBind.vpMqtt.setCurrentItem(0);
+        } else if (checkedId == R.id.rb_user) {
+            mBind.vpMqtt.setCurrentItem(1);
+        } else if (checkedId == R.id.rb_ssl) {
+            mBind.vpMqtt.setCurrentItem(2);
         }
     }
 

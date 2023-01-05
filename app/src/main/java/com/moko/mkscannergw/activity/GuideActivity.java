@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -14,6 +13,7 @@ import android.provider.Settings;
 import com.elvishew.xlog.XLog;
 import com.moko.mkscannergw.R;
 import com.moko.mkscannergw.base.BaseActivity;
+import com.moko.mkscannergw.databinding.ActivityGuideBinding;
 import com.moko.mkscannergw.dialog.PermissionDialog;
 import com.moko.mkscannergw.utils.Utils;
 import com.moko.support.scannergw.event.MQTTConnectionCompleteEvent;
@@ -26,16 +26,19 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 
-public class GuideActivity extends BaseActivity {
+public class GuideActivity extends BaseActivity<ActivityGuideBinding> {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_guide);
+    protected void onCreate() {
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
             return;
         }
         requestPermission();
+    }
+
+    @Override
+    protected ActivityGuideBinding getViewBinding() {
+        return ActivityGuideBinding.inflate(getLayoutInflater());
     }
 
     private void requestPermission() {
@@ -80,7 +83,7 @@ public class GuideActivity extends BaseActivity {
 
     private void gotoMain() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, ScannerMainActivity.class));
             finish();
         }, 1000);
     }

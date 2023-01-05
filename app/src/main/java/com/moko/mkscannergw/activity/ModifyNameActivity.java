@@ -22,10 +22,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 
-public class ModifyNameActivity extends BaseActivity {
+public class ModifyNameActivity extends BaseActivity<ActivityModifyDeviceNameBinding> {
     private final String FILTER_ASCII = "[ -~]*";
     public static String TAG = ModifyNameActivity.class.getSimpleName();
-    private ActivityModifyDeviceNameBinding mBind;
 
     private MokoDevice device;
     private InputFilter filter;
@@ -55,6 +54,11 @@ public class ModifyNameActivity extends BaseActivity {
         }, 300);
     }
 
+    @Override
+    protected ActivityModifyDeviceNameBinding getViewBinding() {
+        return ActivityModifyDeviceNameBinding.inflate(getLayoutInflater());
+    }
+
 
     public void modifyDone(View view) {
         String nickName = mBind.etNickName.getText().toString();
@@ -65,7 +69,7 @@ public class ModifyNameActivity extends BaseActivity {
         device.nickName = nickName;
         DBTools.getInstance(this).updateDevice(device);
         // 跳转首页，刷新数据
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ScannerMainActivity.class);
         intent.putExtra(AppConstants.EXTRA_KEY_FROM_ACTIVITY, TAG);
         intent.putExtra(AppConstants.EXTRA_KEY_DEVICE_ID, device.deviceId);
         startActivity(intent);

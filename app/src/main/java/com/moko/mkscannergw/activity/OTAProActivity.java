@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelUuid;
@@ -71,12 +70,11 @@ import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 import no.nordicsemi.android.support.v18.scanner.ScanRecord;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
-public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallback {
+public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implements MokoScanDeviceCallback {
     public static final int REQUEST_CODE_SELECT_FIRMWARE = 0x10;
     private final String FILTER_ASCII = "[ -~]*";
 
     public static String TAG = OTAProActivity.class.getSimpleName();
-    private ActivityOtaProBinding mBind;
 
 
     private MokoDevice mMokoDevice;
@@ -89,10 +87,7 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
     private MokoBleScanner mokoBleScanner;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityOtaProBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         if (getIntent().getExtras() != null) {
             mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
         }
@@ -121,6 +116,11 @@ public class OTAProActivity extends BaseActivity implements MokoScanDeviceCallba
         mValues.add("Self signed server certificates ");
         mBind.tvUpdateType.setText(mValues.get(mSelected));
         mokoBleScanner = new MokoBleScanner(this);
+    }
+
+    @Override
+    protected ActivityOtaProBinding getViewBinding() {
+        return ActivityOtaProBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

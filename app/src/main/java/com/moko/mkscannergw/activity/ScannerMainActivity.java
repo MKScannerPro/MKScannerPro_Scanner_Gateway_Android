@@ -2,7 +2,7 @@ package com.moko.mkscannergw.activity;
 
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -17,10 +17,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.moko.mkscannergw.AppConstants;
+import com.moko.mkscannergw.BuildConfig;
 import com.moko.mkscannergw.R;
 import com.moko.mkscannergw.adapter.DeviceAdapter;
 import com.moko.mkscannergw.base.BaseActivity;
-import com.moko.mkscannergw.databinding.ActivityMainBinding;
+import com.moko.mkscannergw.databinding.ActivityMainScannerBinding;
 import com.moko.mkscannergw.db.DBTools;
 import com.moko.mkscannergw.dialog.AlertMessageDialog;
 import com.moko.mkscannergw.entity.MQTTConfig;
@@ -30,6 +31,7 @@ import com.moko.mkscannergw.utils.ToastUtils;
 import com.moko.mkscannergw.utils.Utils;
 import com.moko.support.scannergw.MQTTConstants;
 import com.moko.support.scannergw.MQTTSupport;
+import com.moko.support.scannergw.MokoSupport;
 import com.moko.support.scannergw.entity.MsgNotify;
 import com.moko.support.scannergw.event.DeviceDeletedEvent;
 import com.moko.support.scannergw.event.DeviceModifyNameEvent;
@@ -46,6 +48,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -56,19 +59,30 @@ import java.util.ArrayList;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnItemClickListener, BaseQuickAdapter.OnItemLongClickListener {
+public class ScannerMainActivity extends BaseActivity<ActivityMainScannerBinding> implements BaseQuickAdapter.OnItemClickListener, BaseQuickAdapter.OnItemLongClickListener {
 
-    private ActivityMainBinding mBind;
     private ArrayList<MokoDevice> devices;
     private DeviceAdapter adapter;
     public Handler mHandler;
     public String MQTTAppConfigStr;
 
+    public static String PATH_LOGCAT;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            // 优先保存到SD卡中
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                PATH_LOGCAT = getExternalFilesDir(null).getAbsolutePath() + File.separator + (BuildConfig.IS_LIBRARY ? "MKScannerPro" : "MKScannerGW");
+            } else {
+                PATH_LOGCAT = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + (BuildConfig.IS_LIBRARY ? "MKScannerPro" : "MKScannerGW");
+            }
+        } else {
+            // 如果SD卡不存在，就保存到本应用的目录下
+            PATH_LOGCAT = getFilesDir().getAbsolutePath() + File.separator + (BuildConfig.IS_LIBRARY ? "MKScannerPro" : "MKScannerGW");
+        }
+        MokoSupport.getInstance().init(getApplicationContext());
+        MQTTSupport.getInstance().init(getApplicationContext());
         devices = DBTools.getInstance(this).selectAllDevice();
         adapter = new DeviceAdapter();
         adapter.openLoadAnimation();
@@ -78,7 +92,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         mBind.rvDeviceList.setLayoutManager(new LinearLayoutManager(this));
         mBind.rvDeviceList.setAdapter(adapter);
         if (devices.isEmpty()) {
-            mBind. rlEmpty.setVisibility(View.VISIBLE);
+            mBind.rlEmpty.setVisibility(View.VISIBLE);
             mBind.rvDeviceList.setVisibility(View.GONE);
         } else {
             mBind.rvDeviceList.setVisibility(View.VISIBLE);
@@ -89,19 +103,6 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         if (!TextUtils.isEmpty(MQTTAppConfigStr)) {
             mBind.tvTitle.setText(getString(R.string.mqtt_connecting));
         }
-        StringBuffer buffer = new StringBuffer();
-        // 记录机型
-        buffer.append("机型：");
-        buffer.append(android.os.Build.MODEL);
-        buffer.append("=====");
-        // 记录版本号
-        buffer.append("手机系统版本：");
-        buffer.append(android.os.Build.VERSION.RELEASE);
-        buffer.append("=====");
-        // 记录APP版本
-        buffer.append("APP版本：");
-        buffer.append(Utils.getVersionInfo(this));
-        XLog.d(buffer.toString());
         try {
             MQTTSupport.getInstance().connectMqtt(MQTTAppConfigStr);
         } catch (FileNotFoundException e) {
@@ -117,7 +118,18 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
             errorReport.append(result.toString());
             XLog.e(errorReport.toString());
         }
+        if (!BuildConfig.IS_LIBRARY) {
+            mBind.tvTitle.setOnClickListener(v -> {
+                if (isWindowLocked()) return;
+                // 关于
+                startActivity(new Intent(this, AboutActivity.class));
+            });
+        }
+    }
 
+    @Override
+    protected ActivityMainScannerBinding getViewBinding() {
+        return ActivityMainScannerBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -269,13 +281,6 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         }
     }
 
-    public void about(View view) {
-        if (isWindowLocked())
-            return;
-        // 关于
-        startActivity(new Intent(this, AboutActivity.class));
-    }
-
     @Override
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
         MokoDevice mokoDevice = (MokoDevice) adapter.getItem(position);
@@ -289,7 +294,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
             ToastUtils.showToast(this, R.string.device_offline);
             return;
         }
-        Intent i = new Intent(MainActivity.this, DeviceDetailActivity.class);
+        Intent i = new Intent(ScannerMainActivity.this, DeviceDetailActivity.class);
         i.putExtra(AppConstants.EXTRA_KEY_DEVICE, mokoDevice);
         startActivity(i);
     }
@@ -304,7 +309,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
         dialog.setMessage("Please confirm again whether to \n remove the device");
         dialog.setOnAlertConfirmListener(() -> {
             if (!MQTTSupport.getInstance().isConnected()) {
-                ToastUtils.showToast(MainActivity.this, R.string.network_error);
+                ToastUtils.showToast(ScannerMainActivity.this, R.string.network_error);
                 return;
             }
             showLoadingProgressDialog();
@@ -315,7 +320,7 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
                 e.printStackTrace();
             }
             XLog.i(String.format("删除设备:%s", mokoDevice.nickName));
-            DBTools.getInstance(MainActivity.this).deleteDevice(mokoDevice);
+            DBTools.getInstance(ScannerMainActivity.this).deleteDevice(mokoDevice);
             EventBus.getDefault().post(new DeviceDeletedEvent(mokoDevice.id));
             devices.remove(mokoDevice);
             adapter.replaceData(devices);
@@ -434,6 +439,28 @@ public class MainActivity extends BaseActivity implements BaseQuickAdapter.OnIte
             return false;
         } else {
             return true;
+        }
+    }
+
+    public void onBack(View view) {
+        if (isWindowLocked()) return;
+        back();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isWindowLocked()) return;
+        back();
+    }
+
+    private void back() {
+        if (BuildConfig.IS_LIBRARY) {
+            finish();
+        } else {
+            AlertMessageDialog dialog = new AlertMessageDialog();
+            dialog.setMessage(R.string.main_exit_tips);
+            dialog.setOnAlertConfirmListener(() -> finish());
+            dialog.show(getSupportFragmentManager());
         }
     }
 }

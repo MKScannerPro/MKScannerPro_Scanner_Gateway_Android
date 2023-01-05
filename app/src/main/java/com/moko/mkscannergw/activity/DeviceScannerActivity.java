@@ -1,7 +1,6 @@
 package com.moko.mkscannergw.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelUuid;
@@ -48,8 +47,7 @@ import no.nordicsemi.android.support.v18.scanner.ScanRecord;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 
-public class DeviceScannerActivity extends BaseActivity implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemClickListener {
-    private ActivityScannerBinding mBind;
+public class DeviceScannerActivity extends BaseActivity<ActivityScannerBinding> implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemClickListener {
 
     private Animation animation = null;
     private DeviceInfoAdapter mAdapter;
@@ -65,10 +63,7 @@ public class DeviceScannerActivity extends BaseActivity implements MokoScanDevic
     private int mSelectedDeviceType;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityScannerBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         mDeviceMap = new ConcurrentHashMap<>();
         mDevices = new ArrayList<>();
         mAdapter = new DeviceInfoAdapter();
@@ -93,6 +88,11 @@ public class DeviceScannerActivity extends BaseActivity implements MokoScanDevic
                 mokoBleScanner.stopScanDevice();
             }
         });
+    }
+
+    @Override
+    protected ActivityScannerBinding getViewBinding() {
+        return ActivityScannerBinding.inflate(getLayoutInflater());
     }
 
     @Override

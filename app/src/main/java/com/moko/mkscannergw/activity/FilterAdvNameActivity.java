@@ -1,7 +1,6 @@
 package com.moko.mkscannergw.activity;
 
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
@@ -43,10 +42,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterAdvNameActivity extends BaseActivity {
+public class FilterAdvNameActivity extends BaseActivity<ActivityFilterAdvNameBinding> {
 
     private final String FILTER_ASCII = "[ -~]*";
-    private ActivityFilterAdvNameBinding mBind;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -57,11 +55,7 @@ public class FilterAdvNameActivity extends BaseActivity {
     private InputFilter filter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityFilterAdvNameBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
-
+    protected void onCreate() {
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -82,6 +76,11 @@ public class FilterAdvNameActivity extends BaseActivity {
             finish();
         }, 30 * 1000);
         getFilterAdvName();
+    }
+
+    @Override
+    protected ActivityFilterAdvNameBinding getViewBinding() {
+        return ActivityFilterAdvNameBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

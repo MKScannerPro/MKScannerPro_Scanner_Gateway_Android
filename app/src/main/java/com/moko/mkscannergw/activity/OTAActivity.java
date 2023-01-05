@@ -1,6 +1,5 @@
 package com.moko.mkscannergw.activity;
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
@@ -39,10 +38,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class OTAActivity extends BaseActivity {
+public class OTAActivity extends BaseActivity<ActivityOtaBinding> {
     private final String FILTER_ASCII = "[ -~]*";
     public static String TAG = OTAActivity.class.getSimpleName();
-    private ActivityOtaBinding mBind;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -51,10 +49,7 @@ public class OTAActivity extends BaseActivity {
     private Handler mHandler;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityOtaBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         if (getIntent().getExtras() != null) {
             mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
         }
@@ -76,6 +71,11 @@ public class OTAActivity extends BaseActivity {
         mValues.add("Client certificate");
         mValues.add("Private key");
         mBind.tvUpdateType.setText(mValues.get(mSelected));
+    }
+
+    @Override
+    protected ActivityOtaBinding getViewBinding() {
+        return ActivityOtaBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

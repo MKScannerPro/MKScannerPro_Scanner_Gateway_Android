@@ -68,6 +68,7 @@ public class PasswordDialog extends MokoBaseDialog<DialogPasswordBinding> {
             }
         });
         mBind.tvPasswordEnsure.setOnClickListener(v -> {
+            dismiss();
             String password = mBind.etPassword.getText().toString();
             if (TextUtils.isEmpty(password)) {
                 ToastUtils.showToast(getContext(), getContext().getString(R.string.password_null));

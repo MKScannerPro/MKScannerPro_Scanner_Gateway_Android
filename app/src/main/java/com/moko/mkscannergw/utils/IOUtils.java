@@ -13,7 +13,8 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 
 import com.elvishew.xlog.XLog;
-import com.moko.mkscannergw.BaseApplication;
+import com.moko.mkscannergw.BuildConfig;
+import com.moko.mkscannergw.activity.ScannerMainActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,7 +48,7 @@ public class IOUtils {
         boolean exist = isSdCardExist();
         String sdpath = "";
         if (exist) {
-            sdpath = BaseApplication.PATH_LOGCAT;
+            sdpath = ScannerMainActivity.PATH_LOGCAT;
         }
         return sdpath;
 
@@ -63,7 +64,7 @@ public class IOUtils {
         String filepath = "";
         File file;
         // 优先保存到SD卡中
-        file = new File(BaseApplication.PATH_LOGCAT, CRASH_FILE);
+        file = new File(ScannerMainActivity.PATH_LOGCAT, CRASH_FILE);
         try {
             if (file.exists()) {
                 filepath = file.getAbsolutePath();
@@ -84,7 +85,7 @@ public class IOUtils {
      */
     public static String getFilePath(String fileName) {
         String filepath = "";
-        File file = new File(BaseApplication.PATH_LOGCAT, fileName);
+        File file = new File(ScannerMainActivity.PATH_LOGCAT, fileName);
         try {
             if (file.exists()) {
                 filepath = file.getAbsolutePath();
@@ -225,7 +226,7 @@ public class IOUtils {
         values.put(MediaStore.DownloadColumns.DISPLAY_NAME, file.getName());
         values.put(MediaStore.DownloadColumns.TITLE, file.getName());
         values.put(MediaStore.DownloadColumns.MIME_TYPE, "*/*");
-        values.put(MediaStore.DownloadColumns.RELATIVE_PATH, "Download/MKScannerGW");
+        values.put(MediaStore.DownloadColumns.RELATIVE_PATH, BuildConfig.IS_LIBRARY ? "Download/MKScannerPro" : "Download/MKScannerGW");
         Uri external = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
         Uri uri = null;
         ContentResolver cr = context.getContentResolver();

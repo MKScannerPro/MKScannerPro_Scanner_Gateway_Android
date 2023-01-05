@@ -1,7 +1,6 @@
 package com.moko.mkscannergw.activity;
 
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
@@ -35,9 +34,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-public class FilterUrlActivity extends BaseActivity {
+public class FilterUrlActivity extends BaseActivity<ActivityFilterUrlBinding> {
     private final String FILTER_ASCII = "[ -~]*";
-    private ActivityFilterUrlBinding mBind;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -45,10 +43,7 @@ public class FilterUrlActivity extends BaseActivity {
     public Handler mHandler;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityFilterUrlBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -68,6 +63,11 @@ public class FilterUrlActivity extends BaseActivity {
         };
         mBind.etUrl.setFilters(new InputFilter[]{new InputFilter.LengthFilter(255), inputFilter});
         getFilterUrl();
+    }
+
+    @Override
+    protected ActivityFilterUrlBinding getViewBinding() {
+        return ActivityFilterUrlBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

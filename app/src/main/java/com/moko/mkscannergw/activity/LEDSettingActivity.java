@@ -1,6 +1,5 @@
 package com.moko.mkscannergw.activity;
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -34,8 +33,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-public class LEDSettingActivity extends BaseActivity {
-    private ActivityLedSettingBinding mBind;
+public class LEDSettingActivity extends BaseActivity<ActivityLedSettingBinding> {
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -48,10 +46,7 @@ public class LEDSettingActivity extends BaseActivity {
     public Handler mHandler;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityLedSettingBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
 
@@ -63,6 +58,11 @@ public class LEDSettingActivity extends BaseActivity {
             LEDSettingActivity.this.finish();
         }, 30 * 1000);
         getLEDStatus();
+    }
+
+    @Override
+    protected ActivityLedSettingBinding getViewBinding() {
+        return ActivityLedSettingBinding.inflate(getLayoutInflater());
     }
 
 

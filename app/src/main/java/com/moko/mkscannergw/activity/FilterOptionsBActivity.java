@@ -1,7 +1,6 @@
 package com.moko.mkscannergw.activity;
 
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
@@ -42,9 +41,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
+public class FilterOptionsBActivity extends BaseActivity<ActivityFilterConditionBinding> implements SeekBar.OnSeekBarChangeListener {
     private final String FILTER_ASCII = "[ -~]*";
-    private ActivityFilterConditionBinding mBind;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -54,11 +52,7 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
     private List<FilterCondition.RawDataBean> filterRawDatas;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityFilterConditionBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());;
-
+    protected void onCreate() {
         mBind.tvTitle.setText("Filter Condition B");
         mBind.tvCondition.setText("Filter Condition B");
         mBind.tvConditionTips.setText(getString(R.string.condition_tips, "B", "B"));
@@ -83,6 +77,11 @@ public class FilterOptionsBActivity extends BaseActivity implements SeekBar.OnSe
             finish();
         }, 30 * 1000);
         getFilterConditionB();
+    }
+
+    @Override
+    protected ActivityFilterConditionBinding getViewBinding() {
+        return ActivityFilterConditionBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

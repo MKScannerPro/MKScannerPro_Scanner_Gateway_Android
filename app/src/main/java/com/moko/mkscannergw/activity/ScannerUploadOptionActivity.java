@@ -1,7 +1,6 @@
 package com.moko.mkscannergw.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -41,9 +40,7 @@ import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
 
-public class ScannerUploadOptionActivity extends BaseActivity {
-
-    private ActivityScannerUploadOptionBinding mBind;
+public class ScannerUploadOptionActivity extends BaseActivity<ActivityScannerUploadOptionBinding> {
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -56,10 +53,7 @@ public class ScannerUploadOptionActivity extends BaseActivity {
     private int mSelected;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityScannerUploadOptionBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -80,6 +74,11 @@ public class ScannerUploadOptionActivity extends BaseActivity {
             finish();
         }, 30 * 1000);
         getFilterRelation();
+    }
+
+    @Override
+    protected ActivityScannerUploadOptionBinding getViewBinding() {
+        return ActivityScannerUploadOptionBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

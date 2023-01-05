@@ -2,7 +2,6 @@ package com.moko.mkscannergw.activity;
 
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
@@ -50,10 +49,9 @@ import java.util.ArrayList;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
+public class ModifyMQTTSettingsActivity extends BaseActivity<ActivityMqttDeviceModifyBinding> implements RadioGroup.OnCheckedChangeListener {
     public static String TAG = ModifyMQTTSettingsActivity.class.getSimpleName();
     private final String FILTER_ASCII = "[ -~]*";
-    private ActivityMqttDeviceModifyBinding mBind;
 
 
     private GeneralDeviceFragment generalFragment;
@@ -70,10 +68,7 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
     private InputFilter filter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityMqttDeviceModifyBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
 
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
@@ -112,6 +107,11 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
         mBind.vpMqtt.setOffscreenPageLimit(3);
         mBind.rgMqtt.setOnCheckedChangeListener(this);
         mHandler = new Handler(Looper.getMainLooper());
+    }
+
+    @Override
+    protected ActivityMqttDeviceModifyBinding getViewBinding() {
+        return ActivityMqttDeviceModifyBinding.inflate(getLayoutInflater());
     }
 
     private void createFragment() {
@@ -201,7 +201,7 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
             mMokoDevice.mqttInfo = new Gson().toJson(mqttConfig, MQTTConfig.class);
             DBTools.getInstance(this).updateDevice(mMokoDevice);
             // 跳转首页，刷新数据
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, ScannerMainActivity.class);
             intent.putExtra(AppConstants.EXTRA_KEY_FROM_ACTIVITY, TAG);
             intent.putExtra(AppConstants.EXTRA_KEY_DEVICE_ID, mMokoDevice.deviceId);
             startActivity(intent);
@@ -378,16 +378,12 @@ public class ModifyMQTTSettingsActivity extends BaseActivity implements RadioGro
 
     @Override
     public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-        switch (checkedId) {
-            case R.id.rb_general:
-                mBind.vpMqtt.setCurrentItem(0);
-                break;
-            case R.id.rb_user:
-                mBind.vpMqtt.setCurrentItem(1);
-                break;
-            case R.id.rb_ssl:
-                mBind.vpMqtt.setCurrentItem(2);
-                break;
+        if (checkedId == R.id.rb_general) {
+            mBind.vpMqtt.setCurrentItem(0);
+        } else if (checkedId == R.id.rb_user) {
+            mBind.vpMqtt.setCurrentItem(1);
+        } else if (checkedId == R.id.rb_ssl) {
+            mBind.vpMqtt.setCurrentItem(2);
         }
     }
 }

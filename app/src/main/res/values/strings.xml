@@ -11,6 +11,7 @@
     <string name="main_add_device">Add Devices</string>
     <string name="add_device_title">Add Device</string>
     <string name="settings_mqtt_device">MQTT settings for device</string>
+    <string name="main_exit_tips">Are you sure you want to quit?</string>
     <string name="setting_syncing">syncing</string>
 
     <string name="password_null">Password cannot be empty!</string>

@@ -3,7 +3,6 @@ package com.moko.mkscannergw.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputFilter;
@@ -48,10 +47,9 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-public class DeviceSettingActivity extends BaseActivity {
+public class DeviceSettingActivity extends BaseActivity<ActivityDeviceSettingBinding> {
     private final String FILTER_ASCII = "[ -~]*";
     public static String TAG = DeviceSettingActivity.class.getSimpleName();
-    private ActivityDeviceSettingBinding mBind;
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -60,10 +58,7 @@ public class DeviceSettingActivity extends BaseActivity {
     private InputFilter filter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityDeviceSettingBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         filter = (source, start, end, dest, dstart, dend) -> {
             if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
@@ -87,6 +82,11 @@ public class DeviceSettingActivity extends BaseActivity {
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mHandler = new Handler(Looper.getMainLooper());
+    }
+
+    @Override
+    protected ActivityDeviceSettingBinding getViewBinding() {
+        return ActivityDeviceSettingBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -160,7 +160,7 @@ public class DeviceSettingActivity extends BaseActivity {
                 mBind.tvName.postDelayed(() -> {
                     dismissLoadingProgressDialog();
                     // 跳转首页，刷新数据
-                    Intent intent = new Intent(this, MainActivity.class);
+                    Intent intent = new Intent(this, ScannerMainActivity.class);
                     intent.putExtra(AppConstants.EXTRA_KEY_FROM_ACTIVITY, TAG);
                     startActivity(intent);
                 }, 500);

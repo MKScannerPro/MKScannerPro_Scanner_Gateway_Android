@@ -1,7 +1,6 @@
 package com.moko.mkscannergw.activity;
 
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -34,8 +33,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-public class FilterMKIBeaconAccActivity extends BaseActivity {
-    private ActivityFilterMkibeaconAccBinding mBind;
+public class FilterMKIBeaconAccActivity extends BaseActivity<ActivityFilterMkibeaconAccBinding> {
 
 
     private MokoDevice mMokoDevice;
@@ -44,11 +42,7 @@ public class FilterMKIBeaconAccActivity extends BaseActivity {
     public Handler mHandler;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityFilterMkibeaconAccBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
-
+    protected void onCreate() {
         String mqttConfigAppStr = SPUtiles.getStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, "");
         appMqttConfig = new Gson().fromJson(mqttConfigAppStr, MQTTConfig.class);
         mMokoDevice = (MokoDevice) getIntent().getSerializableExtra(AppConstants.EXTRA_KEY_DEVICE);
@@ -59,6 +53,11 @@ public class FilterMKIBeaconAccActivity extends BaseActivity {
             finish();
         }, 30 * 1000);
         getFilterMKIBeaconAcc();
+    }
+
+    @Override
+    protected ActivityFilterMkibeaconAccBinding getViewBinding() {
+        return ActivityFilterMkibeaconAccBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

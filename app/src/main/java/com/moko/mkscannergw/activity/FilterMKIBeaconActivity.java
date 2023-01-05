@@ -34,9 +34,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 
-public class FilterMKIBeaconActivity extends BaseActivity {
-
-    private ActivityFilterMkibeaconBinding mBind;
+public class FilterMKIBeaconActivity extends BaseActivity<ActivityFilterMkibeaconBinding> {
 
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
@@ -59,6 +57,11 @@ public class FilterMKIBeaconActivity extends BaseActivity {
             finish();
         }, 30 * 1000);
         getFilterMKIBeacon();
+    }
+
+    @Override
+    protected ActivityFilterMkibeaconBinding getViewBinding() {
+        return ActivityFilterMkibeaconBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
