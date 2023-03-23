@@ -392,8 +392,20 @@ public class ParamsTask extends OrderTask {
                 byte[] remainBytes = Arrays.copyOfRange(value, 6, 6 + length);
                 dataBytesStr += MokoUtils.bytesToHexString(remainBytes);
             } else {
-                if (length == 0)
-                    return true;
+                if (length == 0){
+                    data = new byte[5];
+                    data[0] = (byte) 0xEE;
+                    data[1] = (byte) 0x00;
+                    data[2] = (byte) cmd;
+                    data[3] = 0;
+                    data[4] = 0;
+                    response.responseValue = data;
+                    orderStatus = ORDER_STATUS_SUCCESS;
+                    MokoSupport.getInstance().pollTask();
+                    MokoSupport.getInstance().executeTask();
+                    MokoSupport.getInstance().orderResult(response);
+                    return false;
+                }
                 byte[] remainBytes = Arrays.copyOfRange(value, 6, 6 + length);
                 dataBytesStr += MokoUtils.bytesToHexString(remainBytes);
                 dataBytes = MokoUtils.hex2bytes(dataBytesStr);

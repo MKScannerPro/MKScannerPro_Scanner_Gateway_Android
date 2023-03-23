@@ -6,7 +6,7 @@
     <string name="mqtt_connecting">Connecting...</string>
     <string name="mqtt_connect_failed">Connect Failed</string>
     <string name="network_error">Network error,please check.</string>
-    <string name="device_offline">Device is offline,pleaese check!</string>
+    <string name="device_offline">Device is offline,please check!</string>
     <string name="main_welcome">Please add new device!</string>
     <string name="main_add_device">Add Devices</string>
     <string name="add_device_title">Add Device</string>

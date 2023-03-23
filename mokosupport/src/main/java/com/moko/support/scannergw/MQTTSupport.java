@@ -108,7 +108,9 @@ public class MQTTSupport {
             public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                 XLog.w(String.format("%s:%s", TAG, "connect failure"));
                 XLog.w("onFailure--->" + exception.getMessage());
-                if (MqttException.REASON_CODE_CLIENT_CONNECTED == asyncActionToken.getException().getReasonCode()) {
+                if (asyncActionToken != null
+                        && asyncActionToken.getException() != null
+                        && MqttException.REASON_CODE_CLIENT_CONNECTED == asyncActionToken.getException().getReasonCode()) {
                     if (isWindowLocked()) return;
                     XLog.w("断开当前连接，2S后重连...");
                     disconnectMqtt();

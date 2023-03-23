@@ -33,16 +33,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application android:allowBackup="true">
-
-        <activity
-            android:name="com.moko.mkscannergw.activity.GuideActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name="com.moko.mkscannergw.activity.ScannerMainActivity"
             android:launchMode="singleTask"
@@ -207,8 +197,6 @@
             android:name="com.moko.mkscannergw.activity.DeviceInfoProActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
-
-        <service android:name="com.moko.mkscannergw.service.DfuService" />
     </application>
 
 </manifest>
