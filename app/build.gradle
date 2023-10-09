@@ -5,17 +5,16 @@ if (!isLibrary.toBoolean()) {
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion '29.0.3'
+    compileSdkVersion 33
 
     defaultConfig {
         if (!isLibrary.toBoolean()) {
             applicationId "com.moko.mkscannergw"
         }
         minSdkVersion 21
-        targetSdkVersion 31
-        versionCode 14
-        versionName "1.0.14"
+        targetSdkVersion 33
+        versionCode 15
+        versionName "1.0.15"
         def formatDate = new Date().format("yyyyMMddHHmm")
         setProperty("archivesBaseName", "MKScannerGW_${versionName}_${formatDate}")
     }
