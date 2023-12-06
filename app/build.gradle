@@ -13,8 +13,8 @@ android {
         }
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 15
-        versionName "1.0.15"
+        versionCode 16
+        versionName "1.0.16"
         def formatDate = new Date().format("yyyyMMddHHmm")
         setProperty("archivesBaseName", "MKScannerGW_${versionName}_${formatDate}")
     }
@@ -106,7 +106,7 @@ dependencies {
         provided files('libs/mokoBleLib.jar')
         implementation 'com.google.code.gson:gson:2.8.5'
         implementation 'no.nordicsemi.android.support.v18:scanner:1.6.0'
-        implementation 'no.nordicsemi.android:dfu:0.6.2'
+        implementation 'no.nordicsemi.android:dfu:2.3.0'
         implementation 'org.greenrobot:eventbus:3.2.0'
         implementation 'com.elvishew:xlog:1.6.1'
         implementation 'no.nordicsemi.android:ble:2.5.1'
