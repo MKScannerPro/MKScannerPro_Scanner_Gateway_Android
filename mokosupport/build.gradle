@@ -1,9 +1,10 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 33
+    compileSdk 33
 
     defaultConfig {
+        namespace = "com.moko.support.scannergw"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 1
@@ -32,7 +33,7 @@ dependencies {
     api 'no.nordicsemi.android:dfu:0.6.2'
     api 'org.greenrobot:eventbus:3.2.0'
     api 'com.elvishew:xlog:1.6.1'
-    implementation 'no.nordicsemi.android:ble:2.5.1'
+    implementation 'no.nordicsemi.android:ble:2.7.2'
     api 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.2'
     //new mqtt library that supports android 12
     api 'androidx.legacy:legacy-support-v4:1.0.0'

@@ -5,12 +5,13 @@ if (!isLibrary.toBoolean()) {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdk 33
 
     defaultConfig {
         if (!isLibrary.toBoolean()) {
-            applicationId "com.moko.mkscannergw"
+            applicationId = "com.moko.mkscannergw"
         }
+        namespace = "com.moko.mkscannergw"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 15
@@ -103,13 +104,13 @@ dependencies {
         implementation project(path: ':mokosupport')
     } else {
         implementation files('libs/mokoSupport.jar')
-        provided files('libs/mokoBleLib.jar')
+        compileOnly files('libs/mokoBleLib.jar')
         implementation 'com.google.code.gson:gson:2.8.5'
         implementation 'no.nordicsemi.android.support.v18:scanner:1.6.0'
         implementation 'no.nordicsemi.android:dfu:0.6.2'
         implementation 'org.greenrobot:eventbus:3.2.0'
         implementation 'com.elvishew:xlog:1.6.1'
-        implementation 'no.nordicsemi.android:ble:2.5.1'
+        implementation 'no.nordicsemi.android:ble:2.7.2'
         implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.2'
         //new mqtt library that supports android 12
         implementation 'androidx.legacy:legacy-support-v4:1.0.0'
