@@ -570,6 +570,7 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
                     final DfuServiceInitiator starter = new DfuServiceInitiator(mSlaveDeviceMac)
                             .setKeepBond(false)
                             .setForeground(false)
+                            .setMtu(23)
                             .setDisableNotification(true);
                     starter.setZip(mFirmwareUri);
                     starter.start(this, DfuService.class);
