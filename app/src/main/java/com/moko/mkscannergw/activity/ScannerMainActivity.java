@@ -81,19 +81,21 @@ public class ScannerMainActivity extends BaseActivity<ActivityMainScannerBinding
             // 如果SD卡不存在，就保存到本应用的目录下
             PATH_LOGCAT = getFilesDir().getAbsolutePath() + File.separator + (BuildConfig.IS_LIBRARY ? "MKScannerPro" : "MKScannerGW");
         }
-        StringBuffer buffer = new StringBuffer();
-        // 记录机型
-        buffer.append("机型：");
-        buffer.append(android.os.Build.MODEL);
-        buffer.append("=====");
-        // 记录版本号
-        buffer.append("手机系统版本：");
-        buffer.append(android.os.Build.VERSION.RELEASE);
-        buffer.append("=====");
-        // 记录APP版本
-        buffer.append("APP版本：");
-        buffer.append(Utils.getVersionInfo(this));
-        XLog.d(buffer.toString());
+        if (!BuildConfig.IS_LIBRARY) {
+            StringBuffer buffer = new StringBuffer();
+            // 记录机型
+            buffer.append("机型：");
+            buffer.append(android.os.Build.MODEL);
+            buffer.append("=====");
+            // 记录版本号
+            buffer.append("手机系统版本：");
+            buffer.append(android.os.Build.VERSION.RELEASE);
+            buffer.append("=====");
+            // 记录APP版本
+            buffer.append("APP版本：");
+            buffer.append(Utils.getVersionInfo(this));
+            XLog.d(buffer.toString());
+        }
         MokoSupport.getInstance().init(getApplicationContext());
         MQTTSupport.getInstance().init(getApplicationContext());
         devices = DBTools.getInstance(this).selectAllDevice();

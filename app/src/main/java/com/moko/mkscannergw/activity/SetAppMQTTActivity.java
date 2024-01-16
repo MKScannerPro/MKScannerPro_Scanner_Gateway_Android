@@ -109,7 +109,6 @@ public class SetAppMQTTActivity extends BaseActivity<ActivityMqttAppBinding> imp
     public void onMQTTConnectionCompleteEvent(MQTTConnectionCompleteEvent event) {
         EventBus.getDefault().cancelEventDelivery(event);
         String mqttConfigStr = new Gson().toJson(mqttConfig, MQTTConfig.class);
-        SPUtiles.setStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, mqttConfigStr);
         runOnUiThread(() -> {
             ToastUtils.showToast(SetAppMQTTActivity.this, getString(R.string.success));
             dismissLoadingProgressDialog();
@@ -223,6 +222,7 @@ public class SetAppMQTTActivity extends BaseActivity<ActivityMqttAppBinding> imp
             return;
         }
         String mqttConfigStr = new Gson().toJson(mqttConfig, MQTTConfig.class);
+        SPUtiles.setStringValue(this, AppConstants.SP_KEY_MQTT_CONFIG_APP, mqttConfigStr);
         MQTTSupport.getInstance().disconnectMqtt();
         showLoadingProgressDialog();
         mBind.etMqttHost.postDelayed(() -> {
