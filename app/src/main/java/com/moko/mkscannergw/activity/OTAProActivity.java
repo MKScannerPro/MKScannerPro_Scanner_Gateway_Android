@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.ParcelUuid;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,8 +17,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.moko.ble.lib.MokoConstants;
-import com.moko.ble.lib.event.ConnectStatusEvent;
 import com.moko.mkscannergw.AppConstants;
 import com.moko.mkscannergw.R;
 import com.moko.mkscannergw.base.BaseActivity;
@@ -33,10 +30,7 @@ import com.moko.mkscannergw.utils.SPUtiles;
 import com.moko.mkscannergw.utils.ToastUtils;
 import com.moko.support.scannergw.MQTTConstants;
 import com.moko.support.scannergw.MQTTSupport;
-import com.moko.support.scannergw.MokoBleScanner;
 import com.moko.support.scannergw.MokoSupport;
-import com.moko.support.scannergw.callback.MokoScanDeviceCallback;
-import com.moko.support.scannergw.entity.DeviceInfo;
 import com.moko.support.scannergw.entity.MsgConfigResult;
 import com.moko.support.scannergw.entity.MsgDeviceInfo;
 import com.moko.support.scannergw.entity.MsgNotify;
@@ -46,7 +40,6 @@ import com.moko.support.scannergw.entity.OTAMasterParams;
 import com.moko.support.scannergw.entity.OTAOneWayParams;
 import com.moko.support.scannergw.entity.OTAResult;
 import com.moko.support.scannergw.entity.OTAState;
-import com.moko.support.scannergw.entity.OrderServices;
 import com.moko.support.scannergw.entity.SlaveDeviceInfo;
 import com.moko.support.scannergw.event.DeviceOnlineEvent;
 import com.moko.support.scannergw.event.MQTTMessageArrivedEvent;
@@ -59,7 +52,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -67,16 +59,11 @@ import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
-import no.nordicsemi.android.support.v18.scanner.ScanRecord;
-import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
-public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implements MokoScanDeviceCallback {
+public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> {
     public static final int REQUEST_CODE_SELECT_FIRMWARE = 0x10;
     private final String FILTER_ASCII = "[ -~]*";
-
     public static String TAG = OTAProActivity.class.getSimpleName();
-
-
     private MokoDevice mMokoDevice;
     private MQTTConfig appMqttConfig;
     private ArrayList<String> mValues;
@@ -84,7 +71,6 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
     private Handler mHandler;
     private String mSlaveDeviceMac;
     private Uri mFirmwareUri;
-    private MokoBleScanner mokoBleScanner;
 
     @Override
     protected void onCreate() {
@@ -95,7 +81,6 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
             if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
             }
-
             return null;
         };
         mBind.etMasterHost.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64), inputFilter});
@@ -115,7 +100,6 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
         mValues.add("CA certificate");
         mValues.add("Self signed server certificates ");
         mBind.tvUpdateType.setText(mValues.get(mSelected));
-        mokoBleScanner = new MokoBleScanner(this);
     }
 
     @Override
@@ -128,8 +112,7 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
         // 更新所有设备的网络状态
         final String topic = event.getTopic();
         final String message = event.getMessage();
-        if (TextUtils.isEmpty(message))
-            return;
+        if (TextUtils.isEmpty(message)) return;
         int msg_id;
         try {
             JsonObject object = new Gson().fromJson(message, JsonObject.class);
@@ -143,9 +126,7 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
             Type type = new TypeToken<MsgNotify<OTAResult>>() {
             }.getType();
             MsgNotify<OTAResult> result = new Gson().fromJson(message, type);
-            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
-                return;
-            }
+            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) return;
             dismissLoadingProgressDialog();
             if (result.data.ota_result == 1) {
                 ToastUtils.showToast(this, R.string.update_success);
@@ -162,9 +143,7 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
             Type type = new TypeToken<MsgReadResult<SlaveDeviceInfo>>() {
             }.getType();
             MsgReadResult<SlaveDeviceInfo> result = new Gson().fromJson(message, type);
-            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
-                return;
-            }
+            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) return;
             dismissLoadingProgressDialog();
             mHandler.removeMessages(0);
             StringBuffer stringBuffer = new StringBuffer(result.data.slave_mac);
@@ -174,7 +153,9 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
             stringBuffer.insert(11, ":");
             stringBuffer.insert(14, ":");
             mSlaveDeviceMac = stringBuffer.toString().toUpperCase();
-            startScan();
+            // 不需要扫描，直接DFU升级
+//            startScan();
+            slaveOTA();
         }
         if (msg_id == MQTTConstants.CONFIG_MSG_ID_OTA_MASTER
                 || msg_id == MQTTConstants.CONFIG_MSG_ID_OTA_ONE_WAY
@@ -182,9 +163,7 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
             Type type = new TypeToken<MsgConfigResult<OTAState>>() {
             }.getType();
             MsgConfigResult<OTAState> result = new Gson().fromJson(message, type);
-            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
-                return;
-            }
+            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) return;
             mHandler.removeMessages(0);
             if (result.result_code == 0) {
                 if (result.data.ota_state != 0) {
@@ -200,9 +179,7 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
             Type type = new TypeToken<MsgConfigResult>() {
             }.getType();
             MsgConfigResult result = new Gson().fromJson(message, type);
-            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) {
-                return;
-            }
+            if (!mMokoDevice.deviceId.equals(result.device_info.device_id)) return;
             if (result.result_code == 0) {
                 // 获取MAC地址后开始搜索设备
                 getSlaveMac();
@@ -217,13 +194,9 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDeviceOnlineEvent(DeviceOnlineEvent event) {
         String deviceId = event.getDeviceId();
-        if (!mMokoDevice.deviceId.equals(deviceId)) {
-            return;
-        }
+        if (!mMokoDevice.deviceId.equals(deviceId)) return;
         boolean online = event.isOnline();
-        if (!online) {
-            finish();
-        }
+        if (!online) finish();
     }
 
     public void back(View view) {
@@ -231,8 +204,7 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
     }
 
     public void startUpdate(View view) {
-        if (isWindowLocked())
-            return;
+        if (isWindowLocked()) return;
         if (!MQTTSupport.getInstance().isConnected()) {
             ToastUtils.showToast(this, R.string.network_error);
             return;
@@ -363,12 +335,6 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
         String hostStr = mBind.etMasterHost.getText().toString();
         String portStr = mBind.etMasterPort.getText().toString();
         String masterStr = mBind.etMasterFilePath.getText().toString();
-        String appTopic;
-        if (TextUtils.isEmpty(appMqttConfig.topicPublish)) {
-            appTopic = mMokoDevice.topicSubscribe;
-        } else {
-            appTopic = appMqttConfig.topicPublish;
-        }
         MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
@@ -378,45 +344,31 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
         params.firmware_way = masterStr;
         String message = MQTTMessageAssembler.assembleWriteOTAMaster(deviceInfo, params);
         try {
-            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_OTA_MASTER, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(getTopic(), message, MQTTConstants.CONFIG_MSG_ID_OTA_MASTER, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
 
-
     private void setOTASlave() {
-        String appTopic;
-        if (TextUtils.isEmpty(appMqttConfig.topicPublish)) {
-            appTopic = mMokoDevice.topicSubscribe;
-        } else {
-            appTopic = appMqttConfig.topicPublish;
-        }
         MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
         String message = MQTTMessageAssembler.assembleWriteOTASlave(deviceInfo);
         try {
-            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_OTA_SLAVE, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(getTopic(), message, MQTTConstants.CONFIG_MSG_ID_OTA_SLAVE, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
 
-
     private void getSlaveMac() {
-        String appTopic;
-        if (TextUtils.isEmpty(appMqttConfig.topicPublish)) {
-            appTopic = mMokoDevice.topicSubscribe;
-        } else {
-            appTopic = appMqttConfig.topicPublish;
-        }
         MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
         String message = MQTTMessageAssembler.assembleReadSlaveDeviceInfo(deviceInfo);
         try {
-            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.READ_MSG_ID_SLAVE_DEVICE_INFO, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(getTopic(), message, MQTTConstants.READ_MSG_ID_SLAVE_DEVICE_INFO, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -426,12 +378,6 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
         String hostStr = mBind.etOneWayHost.getText().toString();
         String portStr = mBind.etOneWayPort.getText().toString();
         String oneWayStr = mBind.etOneWayCaFilePath.getText().toString();
-        String appTopic;
-        if (TextUtils.isEmpty(appMqttConfig.topicPublish)) {
-            appTopic = mMokoDevice.topicSubscribe;
-        } else {
-            appTopic = appMqttConfig.topicPublish;
-        }
         MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
@@ -441,12 +387,11 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
         params.ca_way = oneWayStr;
         String message = MQTTMessageAssembler.assembleWriteOTAOneWay(deviceInfo, params);
         try {
-            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_OTA_ONE_WAY, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(getTopic(), message, MQTTConstants.CONFIG_MSG_ID_OTA_ONE_WAY, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
-
 
     private void setOTABothWay() {
         String hostStr = mBind.etBothWayHost.getText().toString();
@@ -454,12 +399,6 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
         String bothWayCaStr = mBind.etBothWayCaFilePath.getText().toString();
         String bothWayClientKeyStr = mBind.etBothWayClientKeyFilePath.getText().toString();
         String bothWayClientCertStr = mBind.etBothWayClientCertFilePath.getText().toString();
-        String appTopic;
-        if (TextUtils.isEmpty(appMqttConfig.topicPublish)) {
-            appTopic = mMokoDevice.topicSubscribe;
-        } else {
-            appTopic = appMqttConfig.topicPublish;
-        }
         MsgDeviceInfo deviceInfo = new MsgDeviceInfo();
         deviceInfo.device_id = mMokoDevice.deviceId;
         deviceInfo.mac = mMokoDevice.mac;
@@ -471,12 +410,15 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
         params.client_key_way = bothWayClientKeyStr;
         String message = MQTTMessageAssembler.assembleWriteOTABothWay(deviceInfo, params);
         try {
-            MQTTSupport.getInstance().publish(appTopic, message, MQTTConstants.CONFIG_MSG_ID_OTA_BOTH_WAY, appMqttConfig.qos);
+            MQTTSupport.getInstance().publish(getTopic(), message, MQTTConstants.CONFIG_MSG_ID_OTA_BOTH_WAY, appMqttConfig.qos);
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
 
+    private String getTopic() {
+        return TextUtils.isEmpty(appMqttConfig.topicPublish) ? mMokoDevice.topicSubscribe : appMqttConfig.topicPublish;
+    }
 
     public void openSlaveFirmwareFile(View view) {
         if (isWindowLocked())
@@ -496,8 +438,7 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK)
-            return;
+        if (resultCode != RESULT_OK) return;
         //得到uri，后面就是将uri转化成file的过程。
         Uri uri = data.getData();
         String filePath = FileUtils.getPath(this, uri);
@@ -516,71 +457,73 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
         }
     }
 
+//    private void startScan() {
+//        showLoadingProgressDialog();
+//        mokoBleScanner.startScanDevice(this);
+//        mHandler.postDelayed(() -> {
+//            dismissLoadingProgressDialog();
+//            mokoBleScanner.stopScanDevice();
+//        }, 1000 * 30);
+//    }
 
-    private void startScan() {
-        showLoadingProgressDialog();
-        mokoBleScanner.startScanDevice(this);
-        mHandler.postDelayed(() -> {
-            dismissLoadingProgressDialog();
-            mokoBleScanner.stopScanDevice();
-        }, 1000 * 20);
-    }
+//    @Override
+//    public void onStartScan() {
+//
+//    }
+//
+//    @Override
+//    public void onScanDevice(DeviceInfo deviceInfo) {
+//        ScanResult scanResult = deviceInfo.scanResult;
+//        ScanRecord scanRecord = scanResult.getScanRecord();
+//        Map<ParcelUuid, byte[]> map = scanRecord.getServiceData();
+//        if (map == null || map.isEmpty()) return;
+//        byte[] data = map.get(new ParcelUuid(OrderServices.SERVICE_ADV.getUuid()));
+//        if (data == null || data.length != 1) return;
+//        if (!deviceInfo.mac.equalsIgnoreCase(mSlaveDeviceMac)) return;
+//        mHandler.removeMessages(0);
+//        mokoBleScanner.stopScanDevice();
+//        mBind.tvUpdateType.postDelayed(() -> MokoSupport.getInstance().connDevice(deviceInfo.mac), 500);
+//    }
+//
+//    @Override
+//    public void onStopScan() {
+//    }
 
 
-    @Override
-    public void onStartScan() {
-
-    }
-
-    @Override
-    public void onScanDevice(DeviceInfo deviceInfo) {
-        ScanResult scanResult = deviceInfo.scanResult;
-        ScanRecord scanRecord = scanResult.getScanRecord();
-        Map<ParcelUuid, byte[]> map = scanRecord.getServiceData();
-        if (map == null || map.isEmpty()) return;
-        byte[] data = map.get(new ParcelUuid(OrderServices.SERVICE_ADV.getUuid()));
-        if (data == null || data.length != 1) return;
-        if (!deviceInfo.mac.equalsIgnoreCase(mSlaveDeviceMac)) return;
-        mHandler.removeMessages(0);
-        mokoBleScanner.stopScanDevice();
-        mBind.tvUpdateType.postDelayed(() -> MokoSupport.getInstance().connDevice(deviceInfo.mac), 500);
-    }
-
-    @Override
-    public void onStopScan() {
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onConnectStatusEvent(ConnectStatusEvent event) {
-        String action = event.getAction();
-        if (MokoConstants.ACTION_DISCONNECTED.equals(action)) {
-            dismissLoadingProgressDialog();
-            if (MokoSupport.getInstance().isBluetoothOpen()) {
-                if (!isUpgrading) {
-                    ToastUtils.showToast(this, "Connection Failed, please try again");
-                }
+    //    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onConnectStatusEvent(ConnectStatusEvent event) {
+//        String action = event.getAction();
+//        if (MokoConstants.ACTION_DISCONNECTED.equals(action)) {
+//            dismissLoadingProgressDialog();
+//            if (MokoSupport.getInstance().isBluetoothOpen()) {
+//                if (!isUpgrading) {
+//                    ToastUtils.showToast(this, "Connection Failed, please try again");
+//                }
+//            }
+//        }
+//        if (MokoConstants.ACTION_DISCOVER_SUCCESS.equals(action)) {
+//            dismissLoadingProgressDialog();
+//            slaveOta();
+//        }
+//    }
+    private void slaveOTA() {
+        String firmwareFilePath = mBind.tvSlaveFilePath.getText().toString();
+        final File firmwareFile = new File(firmwareFilePath);
+        if (firmwareFile.exists()) {
+            try {
+                final DfuServiceInitiator starter = new DfuServiceInitiator(mSlaveDeviceMac)
+                        .setKeepBond(false)
+                        .setForeground(false)
+                        .disableMtuRequest()
+                        .setDisableNotification(true);
+                starter.setZip(mFirmwareUri);
+                starter.start(this, DfuService.class);
+                showDFUProgressDialog("Waiting...");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
-        if (MokoConstants.ACTION_DISCOVER_SUCCESS.equals(action)) {
-            dismissLoadingProgressDialog();
-            String firmwareFilePath = mBind.tvSlaveFilePath.getText().toString();
-            final File firmwareFile = new File(firmwareFilePath);
-            if (firmwareFile.exists()) {
-                try {
-                    final DfuServiceInitiator starter = new DfuServiceInitiator(mSlaveDeviceMac)
-                            .setKeepBond(false)
-                            .setForeground(false)
-                            .setMtu(23)
-                            .setDisableNotification(true);
-                    starter.setZip(mFirmwareUri);
-                    starter.start(this, DfuService.class);
-                    showDFUProgressDialog("Waiting...");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Toast.makeText(this, "file is not exists!", Toast.LENGTH_SHORT).show();
-            }
+        } else {
+            Toast.makeText(this, "file is not exists!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -662,7 +605,13 @@ public class OTAProActivity extends BaseActivity<ActivityOtaProBinding> implemen
         @Override
         public void onDfuCompleted(String deviceAddress) {
             XLog.w("onDfuCompleted...");
+            ToastUtils.showToast(OTAProActivity.this, R.string.update_success);
             isUpgradeCompleted = true;
+            if (isUpgrading && isUpgradeCompleted) {
+                isUpgrading = false;
+                isUpgradeCompleted = false;
+                dismissDFUProgressDialog();
+            }
         }
 
         @Override

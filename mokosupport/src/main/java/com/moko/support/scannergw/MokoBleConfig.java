@@ -38,19 +38,22 @@ final class MokoBleConfig extends MokoBleManager {
             disconnectedCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_DISCONNECTED_NOTIFY.getUuid());
             paramsCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_PARAMS.getUuid());
             return passwordCharacteristic != null
-                    && disconnectedCharacteristic != null
-                    && paramsCharacteristic != null;
+                    || disconnectedCharacteristic != null
+                    || paramsCharacteristic != null;
         }
         return false;
     }
 
     @Override
     public void init() {
-        enablePasswordNotify();
-        enableDisconnectedNotify();
-        enableParamNotify();
-        requestMtu(247).with(((device, mtu) -> {})).then((device -> {
+        if (paramsCharacteristic == null) {
             mMokoResponseCallback.onServicesDiscovered(gatt);
+            return;
+        }
+        requestMtu(247).then((device -> {
+            enablePasswordNotify();
+            enableDisconnectedNotify();
+            enableParamNotify();
         })).enqueue();
     }
 
@@ -124,7 +127,9 @@ final class MokoBleConfig extends MokoBleManager {
             XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
             mMokoResponseCallback.onCharacteristicChanged(paramsCharacteristic, value);
         });
-        enableNotifications(paramsCharacteristic).enqueue();
+        enableNotifications(paramsCharacteristic).done(device -> {
+            mMokoResponseCallback.onServicesDiscovered(gatt);
+        }).enqueue();
     }
 
     public void disableParamNotify() {
