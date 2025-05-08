@@ -9,8 +9,8 @@ import android.os.SystemClock;
 
 import com.elvishew.xlog.XLog;
 import com.moko.mkscannergw.activity.GuideActivity;
-import com.moko.mkscannergw.dialog.LoadingDialog;
-import com.moko.mkscannergw.dialog.LoadingMessageDialog;
+import com.moko.lib.scannerui.dialog.LoadingDialog;
+import com.moko.lib.scannerui.dialog.LoadingMessageDialog;
 
 import org.greenrobot.eventbus.EventBus;
 

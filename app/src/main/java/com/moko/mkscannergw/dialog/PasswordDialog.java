@@ -11,9 +11,10 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
+import com.moko.lib.scannerui.dialog.MokoBaseDialog;
+import com.moko.lib.scannerui.utils.ToastUtils;
 import com.moko.mkscannergw.R;
 import com.moko.mkscannergw.databinding.DialogPasswordBinding;
-import com.moko.mkscannergw.utils.ToastUtils;
 
 public class PasswordDialog extends MokoBaseDialog<DialogPasswordBinding> {
     public static final String TAG = PasswordDialog.class.getSimpleName();

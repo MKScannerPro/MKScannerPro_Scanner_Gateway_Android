@@ -11,8 +11,8 @@ import android.widget.CompoundButton;
 import com.moko.mkscannergw.R;
 import com.moko.mkscannergw.base.BaseActivity;
 import com.moko.mkscannergw.databinding.FragmentSslDevicePathBinding;
-import com.moko.mkscannergw.dialog.BottomDialog;
-import com.moko.mkscannergw.utils.ToastUtils;
+import com.moko.lib.scannerui.dialog.BottomDialog;
+import com.moko.lib.scannerui.utils.ToastUtils;
 
 import java.util.ArrayList;
 

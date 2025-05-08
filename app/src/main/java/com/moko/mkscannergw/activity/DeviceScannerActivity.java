@@ -23,7 +23,7 @@ import com.moko.mkscannergw.base.BaseActivity;
 import com.moko.mkscannergw.databinding.ActivityScannerBinding;
 import com.moko.mkscannergw.dialog.PasswordDialog;
 import com.moko.mkscannergw.utils.SPUtiles;
-import com.moko.mkscannergw.utils.ToastUtils;
+import com.moko.lib.scannerui.utils.ToastUtils;
 import com.moko.support.scannergw.MokoBleScanner;
 import com.moko.support.scannergw.MokoSupport;
 import com.moko.support.scannergw.OrderTaskAssembler;

@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.moko.lib.mqtt.MQTTSupport;
 import com.moko.mkscannergw.AppConstants;
 import com.moko.mkscannergw.R;
 import com.moko.mkscannergw.adapter.ScanDeviceAdapter;
@@ -19,17 +20,16 @@ import com.moko.mkscannergw.db.DBTools;
 import com.moko.mkscannergw.entity.MQTTConfig;
 import com.moko.mkscannergw.entity.MokoDevice;
 import com.moko.mkscannergw.utils.SPUtiles;
-import com.moko.mkscannergw.utils.ToastUtils;
+import com.moko.lib.scannerui.utils.ToastUtils;
 import com.moko.support.scannergw.MQTTConstants;
-import com.moko.support.scannergw.MQTTSupport;
 import com.moko.support.scannergw.entity.MsgConfigResult;
 import com.moko.support.scannergw.entity.MsgDeviceInfo;
 import com.moko.support.scannergw.entity.MsgNotify;
 import com.moko.support.scannergw.entity.MsgReadResult;
 import com.moko.support.scannergw.entity.ScanConfig;
-import com.moko.support.scannergw.event.DeviceModifyNameEvent;
-import com.moko.support.scannergw.event.DeviceOnlineEvent;
-import com.moko.support.scannergw.event.MQTTMessageArrivedEvent;
+import com.moko.lib.mqtt.event.DeviceModifyNameEvent;
+import com.moko.lib.mqtt.event.DeviceOnlineEvent;
+import com.moko.lib.mqtt.event.MQTTMessageArrivedEvent;
 import com.moko.support.scannergw.handler.MQTTMessageAssembler;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -79,7 +79,7 @@ public class DeviceDetailActivity extends BaseActivity<ActivityDetailBinding> {
     }
 
     private void changeView() {
-        mBind.ivScanSwitch.setImageResource(mScanSwitch ? R.drawable.checkbox_open : R.drawable.checkbox_close);
+        mBind.ivScanSwitch.setImageResource(mScanSwitch ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
         mBind.tvScanDeviceTotal.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
         mBind.tvScanDeviceTotal.setText(getString(R.string.scan_device_total, mScanDevices.size()));
         mBind.llScanInterval.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
@@ -156,7 +156,7 @@ public class DeviceDetailActivity extends BaseActivity<ActivityDetailBinding> {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDeviceOnlineEvent(DeviceOnlineEvent event) {
-        String deviceId = event.getDeviceId();
+        String deviceId = event.getMac();
         if (!mMokoDevice.deviceId.equals(deviceId)) {
             return;
         }
@@ -217,7 +217,7 @@ public class DeviceDetailActivity extends BaseActivity<ActivityDetailBinding> {
             return;
         }
         mScanSwitch = !mScanSwitch;
-        mBind.ivScanSwitch.setImageResource(mScanSwitch ? R.drawable.checkbox_open : R.drawable.checkbox_close);
+        mBind.ivScanSwitch.setImageResource(mScanSwitch ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
         mBind.tvScanDeviceTotal.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);
         mBind.tvScanDeviceTotal.setText(getString(R.string.scan_device_total, 0));
         mBind.llScanInterval.setVisibility(mScanSwitch ? View.VISIBLE : View.GONE);

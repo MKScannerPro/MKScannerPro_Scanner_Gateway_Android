@@ -18,7 +18,7 @@
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/back" />
+            android:src="@drawable/ic_back" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -37,7 +37,7 @@
             android:onClick="setAppMQTTConfig"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
-            android:src="@drawable/settings" />
+            android:src="@drawable/ic_settings" />
 
         <View
             style="@style/divider_line"
@@ -77,7 +77,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="30dp"
-                android:src="@drawable/empty_device" />
+                android:src="@drawable/ic_empty_device" />
         </RelativeLayout>
     </RelativeLayout>
 

@@ -14,23 +14,23 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.moko.lib.mqtt.MQTTSupport;
 import com.moko.mkscannergw.AppConstants;
 import com.moko.mkscannergw.R;
 import com.moko.mkscannergw.base.BaseActivity;
 import com.moko.mkscannergw.databinding.ActivityFilterConditionBinding;
-import com.moko.mkscannergw.dialog.AlertMessageDialog;
+import com.moko.lib.scannerui.dialog.AlertMessageDialog;
 import com.moko.mkscannergw.entity.MQTTConfig;
 import com.moko.mkscannergw.entity.MokoDevice;
 import com.moko.mkscannergw.utils.SPUtiles;
-import com.moko.mkscannergw.utils.ToastUtils;
+import com.moko.lib.scannerui.utils.ToastUtils;
 import com.moko.support.scannergw.MQTTConstants;
-import com.moko.support.scannergw.MQTTSupport;
 import com.moko.support.scannergw.entity.FilterCondition;
 import com.moko.support.scannergw.entity.MsgConfigResult;
 import com.moko.support.scannergw.entity.MsgDeviceInfo;
 import com.moko.support.scannergw.entity.MsgReadResult;
-import com.moko.support.scannergw.event.DeviceOnlineEvent;
-import com.moko.support.scannergw.event.MQTTMessageArrivedEvent;
+import com.moko.lib.mqtt.event.DeviceOnlineEvent;
+import com.moko.lib.mqtt.event.MQTTMessageArrivedEvent;
 import com.moko.support.scannergw.handler.MQTTMessageAssembler;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -111,7 +111,7 @@ public class FilterOptionsBActivity extends BaseActivity<ActivityFilterCondition
             mHandler.removeMessages(0);
             int rule_switch = result.data.rule_switch;
             filterSwitchEnable = rule_switch == 1;
-            mBind.ivCondition.setImageResource(filterSwitchEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+            mBind.ivCondition.setImageResource(filterSwitchEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
             final int rssi = result.data.rssi;
             int progress = rssi + 127;
             mBind.sbRssiFilter.setProgress(progress);
@@ -119,7 +119,7 @@ public class FilterOptionsBActivity extends BaseActivity<ActivityFilterCondition
             mBind.tvRssiFilterTips.setText(getString(R.string.rssi_filter, rssi));
             FilterCondition.NameBean nameBean = result.data.name;
             filterNameEnable = nameBean.flag > 0;
-            mBind.ivAdvName.setImageResource(filterNameEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+            mBind.ivAdvName.setImageResource(filterNameEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
             mBind.etAdvName.setVisibility(filterNameEnable ? View.VISIBLE : View.GONE);
             mBind.cbAdvName.setVisibility(filterNameEnable ? View.VISIBLE : View.GONE);
             mBind.cbAdvName.setChecked(nameBean.flag > 1);
@@ -127,7 +127,7 @@ public class FilterOptionsBActivity extends BaseActivity<ActivityFilterCondition
 
             FilterCondition.MacBean macBean = result.data.mac;
             filterMacEnable = macBean.flag > 0;
-            mBind.ivMacAddress.setImageResource(filterMacEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+            mBind.ivMacAddress.setImageResource(filterMacEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
             mBind.etMacAddress.setVisibility(filterMacEnable ? View.VISIBLE : View.GONE);
             mBind.cbMacAddress.setVisibility(filterMacEnable ? View.VISIBLE : View.GONE);
             mBind.cbMacAddress.setChecked(macBean.flag > 1);
@@ -135,7 +135,7 @@ public class FilterOptionsBActivity extends BaseActivity<ActivityFilterCondition
 
             FilterCondition.UUIDBean uuidBean = result.data.uuid;
             filterUUIDEnable = uuidBean.flag > 0;
-            mBind.ivIbeaconUuid.setImageResource(filterUUIDEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+            mBind.ivIbeaconUuid.setImageResource(filterUUIDEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
             mBind.etIbeaconUuid.setVisibility(filterUUIDEnable ? View.VISIBLE : View.GONE);
             mBind.cbIbeaconUuid.setVisibility(filterUUIDEnable ? View.VISIBLE : View.GONE);
             mBind.cbIbeaconUuid.setChecked(uuidBean.flag > 1);
@@ -143,7 +143,7 @@ public class FilterOptionsBActivity extends BaseActivity<ActivityFilterCondition
 
             FilterCondition.MajorBean majorBean = result.data.major;
             filterMajorEnable = majorBean.flag > 0;
-            mBind.ivIbeaconMajor.setImageResource(filterMajorEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+            mBind.ivIbeaconMajor.setImageResource(filterMajorEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
             mBind.llIbeaconMajor.setVisibility(filterMajorEnable ? View.VISIBLE : View.GONE);
             mBind.cbIbeaconMajor.setVisibility(filterMajorEnable ? View.VISIBLE : View.GONE);
             mBind.cbIbeaconMajor.setChecked(majorBean.flag > 1);
@@ -154,7 +154,7 @@ public class FilterOptionsBActivity extends BaseActivity<ActivityFilterCondition
 
             FilterCondition.MinorBean minorBean = result.data.minor;
             filterMinorEnable = minorBean.flag > 0;
-            mBind.ivIbeaconMinor.setImageResource(filterMinorEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+            mBind.ivIbeaconMinor.setImageResource(filterMinorEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
             mBind.llIbeaconMinor.setVisibility(filterMinorEnable ? View.VISIBLE : View.GONE);
             mBind.cbIbeaconMinor.setVisibility(filterMinorEnable ? View.VISIBLE : View.GONE);
             mBind.cbIbeaconMinor.setChecked(minorBean.flag > 1);
@@ -165,7 +165,7 @@ public class FilterOptionsBActivity extends BaseActivity<ActivityFilterCondition
 
             FilterCondition.RawBean rawBean = result.data.raw;
             filterRawAdvDataEnable = rawBean.flag > 0;
-            mBind.ivRawAdvData.setImageResource(filterRawAdvDataEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+            mBind.ivRawAdvData.setImageResource(filterRawAdvDataEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
             mBind.llRawDataFilter.setVisibility(filterRawAdvDataEnable ? View.VISIBLE : View.GONE);
             mBind.ivRawDataAdd.setVisibility(filterRawAdvDataEnable ? View.VISIBLE : View.GONE);
             mBind.ivRawDataDel.setVisibility(filterRawAdvDataEnable ? View.VISIBLE : View.GONE);
@@ -207,7 +207,7 @@ public class FilterOptionsBActivity extends BaseActivity<ActivityFilterCondition
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDeviceOnlineEvent(DeviceOnlineEvent event) {
-        String deviceId = event.getDeviceId();
+        String deviceId = event.getMac();
         if (!mMokoDevice.deviceId.equals(deviceId)) {
             return;
         }
@@ -266,42 +266,42 @@ public class FilterOptionsBActivity extends BaseActivity<ActivityFilterCondition
 
     public void onMacAddress(View view) {
         filterMacEnable = !filterMacEnable;
-        mBind.ivMacAddress.setImageResource(filterMacEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+        mBind.ivMacAddress.setImageResource(filterMacEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
         mBind.etMacAddress.setVisibility(filterMacEnable ? View.VISIBLE : View.GONE);
         mBind.cbMacAddress.setVisibility(filterMacEnable ? View.VISIBLE : View.GONE);
     }
 
     public void onAdvName(View view) {
         filterNameEnable = !filterNameEnable;
-        mBind.ivAdvName.setImageResource(filterNameEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+        mBind.ivAdvName.setImageResource(filterNameEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
         mBind.etAdvName.setVisibility(filterNameEnable ? View.VISIBLE : View.GONE);
         mBind.cbAdvName.setVisibility(filterNameEnable ? View.VISIBLE : View.GONE);
     }
 
     public void oniBeaconUUID(View view) {
         filterUUIDEnable = !filterUUIDEnable;
-        mBind.ivIbeaconUuid.setImageResource(filterUUIDEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+        mBind.ivIbeaconUuid.setImageResource(filterUUIDEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
         mBind.etIbeaconUuid.setVisibility(filterUUIDEnable ? View.VISIBLE : View.GONE);
         mBind.cbIbeaconUuid.setVisibility(filterUUIDEnable ? View.VISIBLE : View.GONE);
     }
 
     public void oniBeaconMajor(View view) {
         filterMajorEnable = !filterMajorEnable;
-        mBind.ivIbeaconMajor.setImageResource(filterMajorEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+        mBind.ivIbeaconMajor.setImageResource(filterMajorEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
         mBind.llIbeaconMajor.setVisibility(filterMajorEnable ? View.VISIBLE : View.GONE);
         mBind.cbIbeaconMajor.setVisibility(filterMajorEnable ? View.VISIBLE : View.GONE);
     }
 
     public void oniBeaconMinor(View view) {
         filterMinorEnable = !filterMinorEnable;
-        mBind.ivIbeaconMinor.setImageResource(filterMinorEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+        mBind.ivIbeaconMinor.setImageResource(filterMinorEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
         mBind.llIbeaconMinor.setVisibility(filterMinorEnable ? View.VISIBLE : View.GONE);
         mBind.cbIbeaconMinor.setVisibility(filterMinorEnable ? View.VISIBLE : View.GONE);
     }
 
     public void onRawAdvData(View view) {
         filterRawAdvDataEnable = !filterRawAdvDataEnable;
-        mBind.ivRawAdvData.setImageResource(filterRawAdvDataEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+        mBind.ivRawAdvData.setImageResource(filterRawAdvDataEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
         mBind.llRawDataFilter.setVisibility(filterRawAdvDataEnable ? View.VISIBLE : View.GONE);
         mBind.ivRawDataAdd.setVisibility(filterRawAdvDataEnable ? View.VISIBLE : View.GONE);
         mBind.ivRawDataDel.setVisibility(filterRawAdvDataEnable ? View.VISIBLE : View.GONE);
@@ -342,7 +342,7 @@ public class FilterOptionsBActivity extends BaseActivity<ActivityFilterCondition
 
     public void onCondition(View view) {
         filterSwitchEnable = !filterSwitchEnable;
-        mBind.ivCondition.setImageResource(filterSwitchEnable ? R.drawable.ic_cb_open : R.drawable.ic_cb_close);
+        mBind.ivCondition.setImageResource(filterSwitchEnable ? R.drawable.ic_checkbox_open : R.drawable.ic_checkbox_close);
     }
 
 

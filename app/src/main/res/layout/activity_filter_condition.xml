@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:drawableLeft="@drawable/back"
+            android:drawableLeft="@drawable/ic_back"
             android:drawablePadding="6dp"
             android:gravity="center_vertical"
             android:onClick="onBack"
@@ -149,7 +149,7 @@
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:src="@drawable/ic_cb_close"
+                android:src="@drawable/ic_checkbox_close"
                 app:layout_constraintBottom_toBottomOf="@id/mac_address"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/mac_address" />
@@ -208,7 +208,7 @@
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:src="@drawable/ic_cb_close"
+                android:src="@drawable/ic_checkbox_close"
                 app:layout_constraintBottom_toBottomOf="@id/adv_name"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/adv_name" />
@@ -265,7 +265,7 @@
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:src="@drawable/ic_cb_close"
+                android:src="@drawable/ic_checkbox_close"
                 app:layout_constraintBottom_toBottomOf="@id/ibeacon_uuid"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/ibeacon_uuid" />
@@ -324,7 +324,7 @@
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:src="@drawable/ic_cb_close"
+                android:src="@drawable/ic_checkbox_close"
                 app:layout_constraintBottom_toBottomOf="@id/ibeacon_major"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/ibeacon_major" />
@@ -424,7 +424,7 @@
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:src="@drawable/ic_cb_close"
+                android:src="@drawable/ic_checkbox_close"
                 app:layout_constraintBottom_toBottomOf="@id/ibeacon_minor"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/ibeacon_minor" />
@@ -523,7 +523,7 @@
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:src="@drawable/ic_cb_close"
+                android:src="@drawable/ic_checkbox_close"
                 app:layout_constraintBottom_toBottomOf="@id/raw_adv_data"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/raw_adv_data" />
@@ -607,7 +607,7 @@
                 android:paddingLeft="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:src="@drawable/ic_cb_close"
+                android:src="@drawable/ic_checkbox_close"
                 app:layout_constraintBottom_toBottomOf="@id/tv_condition"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tv_condition" />

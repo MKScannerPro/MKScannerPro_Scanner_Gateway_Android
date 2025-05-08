@@ -8,21 +8,21 @@ import android.widget.RadioGroup;
 
 import com.elvishew.xlog.XLog;
 import com.google.gson.Gson;
+import com.moko.lib.mqtt.MQTTSupport;
 import com.moko.mkscannergw.AppConstants;
 import com.moko.mkscannergw.R;
 import com.moko.mkscannergw.adapter.MQTTFragmentAdapter;
 import com.moko.mkscannergw.base.BaseActivity;
 import com.moko.mkscannergw.databinding.ActivityMqttAppBinding;
-import com.moko.mkscannergw.dialog.AlertMessageDialog;
+import com.moko.lib.scannerui.dialog.AlertMessageDialog;
 import com.moko.mkscannergw.entity.MQTTConfig;
 import com.moko.mkscannergw.fragment.GeneralFragment;
 import com.moko.mkscannergw.fragment.SSLFragment;
 import com.moko.mkscannergw.fragment.UserFragment;
 import com.moko.mkscannergw.utils.SPUtiles;
-import com.moko.mkscannergw.utils.ToastUtils;
-import com.moko.support.scannergw.MQTTSupport;
-import com.moko.support.scannergw.event.MQTTConnectionCompleteEvent;
-import com.moko.support.scannergw.event.MQTTConnectionFailureEvent;
+import com.moko.lib.scannerui.utils.ToastUtils;
+import com.moko.lib.mqtt.event.MQTTConnectionCompleteEvent;
+import com.moko.lib.mqtt.event.MQTTConnectionFailureEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,6 +48,8 @@ public class SetAppMQTTActivity extends BaseActivity<ActivityMqttAppBinding> imp
     private ArrayList<Fragment> fragments;
 
     private MQTTConfig mqttConfig;
+
+    private boolean mIsSetAppSettings;
 
     @Override
     protected void onCreate() {
@@ -107,6 +109,7 @@ public class SetAppMQTTActivity extends BaseActivity<ActivityMqttAppBinding> imp
 
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 10)
     public void onMQTTConnectionCompleteEvent(MQTTConnectionCompleteEvent event) {
+        if (!mIsSetAppSettings) return;
         EventBus.getDefault().cancelEventDelivery(event);
         String mqttConfigStr = new Gson().toJson(mqttConfig, MQTTConfig.class);
         runOnUiThread(() -> {
@@ -121,6 +124,7 @@ public class SetAppMQTTActivity extends BaseActivity<ActivityMqttAppBinding> imp
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMQTTConnectionFailureEvent(MQTTConnectionFailureEvent event) {
+        if (!mIsSetAppSettings) return;
         ToastUtils.showToast(SetAppMQTTActivity.this, getString(R.string.mqtt_connect_failed));
         dismissLoadingProgressDialog();
         finish();
@@ -226,6 +230,7 @@ public class SetAppMQTTActivity extends BaseActivity<ActivityMqttAppBinding> imp
         MQTTSupport.getInstance().disconnectMqtt();
         showLoadingProgressDialog();
         mBind.etMqttHost.postDelayed(() -> {
+            mIsSetAppSettings = true;
             try {
                 MQTTSupport.getInstance().connectMqtt(mqttConfigStr);
             } catch (FileNotFoundException e) {

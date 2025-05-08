@@ -11,24 +11,24 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.moko.lib.mqtt.MQTTSupport;
 import com.moko.mkscannergw.AppConstants;
 import com.moko.mkscannergw.R;
 import com.moko.mkscannergw.base.BaseActivity;
 import com.moko.mkscannergw.databinding.ActivityOtaBinding;
-import com.moko.mkscannergw.dialog.BottomDialog;
+import com.moko.lib.scannerui.dialog.BottomDialog;
 import com.moko.mkscannergw.entity.MQTTConfig;
 import com.moko.mkscannergw.entity.MokoDevice;
 import com.moko.mkscannergw.utils.SPUtiles;
-import com.moko.mkscannergw.utils.ToastUtils;
+import com.moko.lib.scannerui.utils.ToastUtils;
 import com.moko.support.scannergw.MQTTConstants;
-import com.moko.support.scannergw.MQTTSupport;
 import com.moko.support.scannergw.entity.MsgConfigResult;
 import com.moko.support.scannergw.entity.MsgDeviceInfo;
 import com.moko.support.scannergw.entity.MsgNotify;
 import com.moko.support.scannergw.entity.OTAParams;
 import com.moko.support.scannergw.entity.OTAResult;
-import com.moko.support.scannergw.event.DeviceOnlineEvent;
-import com.moko.support.scannergw.event.MQTTMessageArrivedEvent;
+import com.moko.lib.mqtt.event.DeviceOnlineEvent;
+import com.moko.lib.mqtt.event.MQTTMessageArrivedEvent;
 import com.moko.support.scannergw.handler.MQTTMessageAssembler;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -128,7 +128,7 @@ public class OTAActivity extends BaseActivity<ActivityOtaBinding> {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDeviceOnlineEvent(DeviceOnlineEvent event) {
-        String deviceId = event.getDeviceId();
+        String deviceId = event.getMac();
         if (!mMokoDevice.deviceId.equals(deviceId)) {
             return;
         }

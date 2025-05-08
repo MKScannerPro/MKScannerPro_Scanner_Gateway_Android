@@ -23,25 +23,25 @@ import com.moko.mkscannergw.adapter.DeviceAdapter;
 import com.moko.mkscannergw.base.BaseActivity;
 import com.moko.mkscannergw.databinding.ActivityMainScannerBinding;
 import com.moko.mkscannergw.db.DBTools;
-import com.moko.mkscannergw.dialog.AlertMessageDialog;
+import com.moko.lib.scannerui.dialog.AlertMessageDialog;
 import com.moko.mkscannergw.entity.MQTTConfig;
 import com.moko.mkscannergw.entity.MokoDevice;
 import com.moko.mkscannergw.utils.SPUtiles;
-import com.moko.mkscannergw.utils.ToastUtils;
+import com.moko.lib.scannerui.utils.ToastUtils;
 import com.moko.mkscannergw.utils.Utils;
 import com.moko.support.scannergw.MQTTConstants;
-import com.moko.support.scannergw.MQTTSupport;
+import com.moko.lib.mqtt.MQTTSupport;
 import com.moko.support.scannergw.MokoSupport;
 import com.moko.support.scannergw.entity.MsgNotify;
-import com.moko.support.scannergw.event.DeviceDeletedEvent;
-import com.moko.support.scannergw.event.DeviceModifyNameEvent;
-import com.moko.support.scannergw.event.DeviceOnlineEvent;
-import com.moko.support.scannergw.event.MQTTConnectionCompleteEvent;
-import com.moko.support.scannergw.event.MQTTConnectionFailureEvent;
-import com.moko.support.scannergw.event.MQTTConnectionLostEvent;
-import com.moko.support.scannergw.event.MQTTMessageArrivedEvent;
-import com.moko.support.scannergw.event.MQTTUnSubscribeFailureEvent;
-import com.moko.support.scannergw.event.MQTTUnSubscribeSuccessEvent;
+import com.moko.lib.mqtt.event.DeviceDeletedEvent;
+import com.moko.lib.mqtt.event.DeviceModifyNameEvent;
+import com.moko.lib.mqtt.event.DeviceOnlineEvent;
+import com.moko.lib.mqtt.event.MQTTConnectionCompleteEvent;
+import com.moko.lib.mqtt.event.MQTTConnectionFailureEvent;
+import com.moko.lib.mqtt.event.MQTTConnectionLostEvent;
+import com.moko.lib.mqtt.event.MQTTMessageArrivedEvent;
+import com.moko.lib.mqtt.event.MQTTUnSubscribeFailureEvent;
+import com.moko.lib.mqtt.event.MQTTUnSubscribeSuccessEvent;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.greenrobot.eventbus.EventBus;
@@ -187,7 +187,7 @@ public class ScannerMainActivity extends BaseActivity<ActivityMainScannerBinding
         // 修改了设备名称
         if (!devices.isEmpty()) {
             for (MokoDevice device : devices) {
-                if (device.deviceId.equals(event.getDeviceId())) {
+                if (device.deviceId.equals(event.getMac())) {
                     device.nickName = DBTools.getInstance(this).selectDevice(device.deviceId).nickName;
                     break;
                 }
