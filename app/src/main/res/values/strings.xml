@@ -29,17 +29,12 @@
 
     <string name="device_info_master_software_version">Master Software Version</string>
     <string name="device_info_slave_software_version">Slave Software Version</string>
-    <string name="device_info_firmware_version">Firmware Version</string>
     <string name="device_info_master_firmware_version">Master Firmware Version</string>
     <string name="device_info_slave_firmware_version">Slave Firmware Version</string>
     <string name="device_info_mac">Device Mac</string>
     <string name="device_info_master_mac">Master Device Mac</string>
     <string name="device_info_slave_mac">Slave Device Mac</string>
-    
-    <string name="version_info">Version:%s</string>
-    <string name="about_moko_name">MOKO TECHNOLOGY LTD.</string>
-    <string name="company_website">www.mokosmart.com</string>
-    <string name="scan_device_total">Total %d pieces of data</string>
+
     <string name="date_time"><![CDATA[Date&Time]]></string>
     <string name="mkibeacon_acc"><![CDATA[MKiBeacon&ACC]]></string>
     <string name="mkibeacon_acc_uuid"><![CDATA[MKiBeacon&ACC UUID]]></string>
@@ -50,6 +45,4 @@
     <string name="condition_tips">*Turn on the Filter Condition %s ,all filtration of this page will take effect.Turn off the Filter Condition %s, all filtration of this page will not take effect.</string>
     <string name="channel_domain"><![CDATA[Channel & Domain]]></string>
     <string name="channel_domain_tips"><![CDATA[Note: Configure 2.4G&5G channel by selecting your domain, channels will be matched according to the domain]]></string>
-
-
 </resources>
